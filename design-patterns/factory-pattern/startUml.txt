@@ -1,0 +1,145 @@
+// 静态工厂模式
+//
+//缺点: 1. 不满足开闭原则
+//		2. 不满足单一职责原则
+
+
+@startuml
+
+Figure <|-- Circle
+Figure <|-- Rectangle
+Figure <|-- Triangle
+Factory ..> Figure
+Factory ..> Circle
+Factory ..> Rectangle
+Factory ..> Triangle
+
+abstract Figure
+{
+	{abstract} + display() const = 0 : void
+	{abstract} + area() = 0 : double
+        {abstract} + ~Figure()
+}
+
+class Circle
+{
+	+ Circle(double radius)
+	+ display() const : void
+	+ area() : double
+	+ ~Circle() 
+	- _radius : double
+}
+
+class Rectangle
+{
+	+ Rectangle(double length, double width)
+	+ display() const : void
+	+ area() : double
+	+ ~Rectangle() 
+	- _lenth : double
+        - _width : double
+}
+
+class Triangle
+{
+	+ Triangle(double a, double b, double c)
+	+ display() const : void
+	+ area() : double
+	+ ~Triangle() 
+	- _a : double
+        - _b : double
+        - _c : double
+}
+
+class Factory {
+       {static} + createRectangle() : Figure *
+       {static} + createCircle() : Figure *
+       {static} + createTriangle() : Figure *
+}
+
+
+
+@enduml
+
+
+//
+//工厂模式(工厂方法), 该名称有可能是特指，也有可能是统称
+//生成一种系列的产品时，叫工厂模式
+//生产多种系列的产品时，叫抽象工厂模式
+//
+//优势: 1. 满足开闭原则
+//		2. 满足单一职责原则
+//
+//强调: 1. 该模式并不是什么时候都需要，对于简单对象的创建，
+//		   不需要使用工厂模式
+//		2. 当需要批量创建对象时，才需要使用; 或者是为了应对
+//		   需求的变化，考虑扩展性时可以采用
+//		3.不要滥用设计模式，不要为了用而用
+
+@startuml
+!theme vibrant
+Circle --|> Figure
+Rectangle --|> Figure
+Triangle --|> Figure
+
+
+Factory <|-- RectangleFactory
+Factory <|-- CircleFactory
+Factory <|-- TriangleFactory
+
+Figure <.. Factory
+
+abstract Figure
+{
+	{abstract} + display() const = 0 : void
+	{abstract} + area() = 0 : double
+    {abstract} + ~Figure()
+}
+
+class Circle
+{
+	+ Circle(double radius)
+	+ display() const : void
+	+ area() : double
+	+ ~Circle() 
+	- _radius : double
+}
+
+class Rectangle
+{
+	+ Rectangle(double length, double width)
+	+ display() const : void
+	+ area() : double
+	+ ~Rectangle() 
+	- _lenth : double
+    - _width : double
+}
+
+class Triangle
+{
+	+ Triangle(double a, double b, double c)
+	+ display() const : void
+	+ area() : double
+	+ ~Triangle() 
+	- _a : double
+    - _b : double
+    - _c : double
+}
+
+abstract class Factory {
+       {abstract} + create() = 0 : Figure *
+       {abstract} + ~Factory()
+}
+
+class RectangleFactory {
+    + create() : Figure *
+}
+
+class CircleFactory {
+    + create() : Figure *
+}
+
+class TriangleFactory {
+    + create() : Figure *
+}
+@enduml
