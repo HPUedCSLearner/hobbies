@@ -1,0 +1,47 @@
+@startuml
+!theme vibrant
+
+abstractSubjuct ..> abstractObserver
+
+abstractObserver <|-- ObserverA
+abstractObserver <|-- ObserverB
+abstractObserver <|-- ObserverC
+abstractObserver <|-- ObserverD
+abstractObserver <|-- ObserverE
+
+Subjuct --|> abstractSubjuct
+
+
+abstract class abstractObserver {
+ {abstract} + update() = 0 : void
+}
+
+abstract class abstractSubjuct {
+ {abstract} + addObserver(abstractObserver* observer) = 0 : void
+ {abstract} + rmvObserver(abstractObserver* observer) = 0 : void
+ {abstract} + notify() = 0 : void
+}
+
+class ObserverA {
+    + update() : void
+}
+class ObserverB {
+    + update() : void
+}
+class ObserverC {
+    + update() : void
+}
+class ObserverD {
+    + update() : void
+}
+class ObserverE {
+    + update() : void
+}
+
+class Subjuct {
+    + addObserver(abstractObserver* observer) : void
+    + rmvObserver(abstractObserver* observer) : void
+    + notify() : void
+}
+
+@enduml
