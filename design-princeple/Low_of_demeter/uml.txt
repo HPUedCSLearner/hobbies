@@ -1,0 +1,40 @@
+@startuml
+AbstractBuilding <|.. BuildingA
+AbstractBuilding <|.. BuildingB
+AbstractBuilding <|.. BuildingC
+
+
+Media --> AbstractBuilding : 关联，has,作为Media的成员变量
+Media o-- BuildingA
+Media o-- BuildingB
+Media o-- BuildingC
+
+person "1...n" -- "1...n" Media : 人 和 楼盘 解耦
+
+abstract AbstractBuilding {
+    {abstract} + sale() : void
+    {abstract} + getQuality() : std::string
+}
+class BuildingA {
+    + sale() : void
+    + getQuality() : std::string
+    - mQuelity : std::string
+}
+class BuildingB {
+    + sale() : void
+    + getQuality() : std::string
+    - mQuelity : std::string
+}
+class BuildingC {
+    + sale() : void
+    + getQuality() : std::string
+    - mQuelity : std::string
+}
+
+class Media {
+    + addBuildings(AbstractBuilding* building) : void
+    + findBuilding(std::string needQuelity) : AbstractBuilding*
+    - vBuildings : vector<AbstractBuilding*>
+}
+
+@enduml
