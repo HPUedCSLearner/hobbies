@@ -1,0 +1,19 @@
+@startuml
+
+AbstractCalculator <|.. PlusCal : imp
+AbstractCalculator <|.. SubCal : 实现关系
+
+abstract class AbstractCalculator {
+    {abstract} + getResult() = 0 : int
+    {abstract} + setOperatorNumber(int a, int b) = 0 : void
+}
+
+class PlusCal {
+    + getResult() : int
+    + setOperatorNumber(int a, int b) : void
+}
+class SubCal {
+    + getResult() : int
+    + setOperatorNumber(int a, int b) : void
+}
+@enduml
