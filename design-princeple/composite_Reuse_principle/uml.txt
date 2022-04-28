@@ -1,0 +1,35 @@
+@startuml
+Car <|.. AUDI
+Car <|.. BMW
+Car <|.. BYD
+
+BYD <|-- Person_1 : 通过继承，强耦合
+
+Person_2 o--> Car : 聚合，作为Person2的成员变量，但是不负责car的生命周期
+Person_3 *--> Car : 组合，作为Person3的成员变量，并且负责car的生命周期
+
+abstract class Car {
+    {abstract} + run() : void
+}
+class AUDI {
+    + run() : void
+}
+class BMW {
+    + run() : void
+}
+class BYD {
+    + run() : void
+}
+
+class Person_2 {
+    + DouFeng() : void
+    + buyCar(Car* car) : void
+    - car : Car*
+}
+class Person_3 {
+    + DouFeng() : void
+    + buyCar(Car* car) : void
+    - car : Car*
+}
+
+@enduml
