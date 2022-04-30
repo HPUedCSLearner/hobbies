@@ -1,0 +1,93 @@
+@startuml
+
+AbstractHero <|.. heroA
+
+AbstractHero <|.. AbstractEquipment
+AbstractHero --o AbstractEquipment
+
+AbstractEquipment <|-- KuangtuEquipment
+AbstractEquipment <|-- WuJinZhiRenEquipment
+
+
+abstract AbstractHero {
+    {abstract} + ShowStatus() = 0 : void
+    + mHp : int
+    + mMp : int
+    + mAt : int
+    + mDf : int
+}
+
+class heroA {
+    + ShowStatus : void
+}
+
+abstract AbstractEquipment {
+    + AbstractEquipment(AbstractHero * hero)
+    + ShowStatus(){} : void
+    + pHero : AbstractHero *
+}
+
+class KuangtuEquipment {
+    + KuangtuEquipment(AbstractHero * hero)
+    + addKuangtuAttr() : void
+    + ShouStatus() : void
+}
+
+class WuJinZhiRenEquipment {
+    + WuJinZhiRenEquipment(AbstractHero * hero)
+    + addWuJinAttr() : void
+    + ShouStatus() : void
+}
+
+@enduml
+
+
+
+
+
+
+
+
+
+
+@startuml
+
+AbstractComponent <|.. ConcreteComponent
+
+AbstractComponent <|.. Decorator
+AbstractComponent --o Decorator
+
+Decorator <|-- ConcreteDecoratorA
+Decorator <|-- ConcreteDecoratorB
+
+
+abstract AbstractComponent {
+    {abstract} + ShowStatus() = 0 : void
+    + someSameAttr : AttrType
+}
+
+class ConcreteComponent {
+    + ShowStatus : void
+}
+
+abstract Decorator <<装饰器>> {
+    + Decorator(AbstractComponent * concrete_component)
+    + ShowStatus(){} : void
+    + pConcreteComponent : AbstractComponent *
+}
+
+note top of Decorator : 装饰器，其实还是 AbstractComponent
+
+class ConcreteDecoratorA {
+    + ConcreteDecoratorA(AbstractComponent * concrete_component)
+    + addConcreteDecoratorA_Attr() : void
+    + ShowStatus() : void
+}
+
+class ConcreteDecoratorB {
+    + ConcreteDecoratorB(AbstractComponent * concrete_component)
+    + addConcreteDecoratorB_Attr() : void
+    + ShowStatus() : void
+}
+
+@enduml
