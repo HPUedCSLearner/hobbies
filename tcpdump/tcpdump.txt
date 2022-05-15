@@ -1,0 +1,27 @@
+tcp\udp\icmp\port\src host\dst host\
+
+
+
+tcpdump -h
+tcpdump -i eth0 -s 0 -w test.cap
+tcpdump -r test.cap 
+tcpdump -A -r test.cap // acciss码显示
+tcpdump -X -r test.cap // 十六进制显示
+tcpdump -i eth0 tcp port 22 // 过滤协议端口
+tcpdump -n -r test.cap // -n 不显示域名
+
+tcpdump -n -r test.cap | awk '{print $n}' // 打印第n行
+tcpdump -n -r test.cap | awk '{print $n}' ｜ sort -u // 打印第n行,并且去重
+tcpdump -n src host 'IP' -r test.cap
+tcpdump -n dst host 'IP' -r test.cap
+tcpdump -n port 53 -r test.cap
+tcpdump -nA port 53 -r test.cap
+tcpdump -nX port 53 -r test.cap
+
+高级筛选：如直接过滤tcp包的某个字节为某个值
+tcpdump -n -A 'tcp[13] = 24' -r test.cap // tcp包的第14个的字节值为24 -> 00011000 （flag为 : push, ack)
+tcpdump -n -X 'tcp[13] = 24' -r test.cap
+基于此：可以筛选一个包的任何位置的任何值，十分的灵活
+
+nc -nv 'IP' 22
+curl -v http://www.baidu.com
