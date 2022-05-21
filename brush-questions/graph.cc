@@ -6,14 +6,14 @@ using std::vector;
 
 // 《----------------------------------------------------------------------------------------------------------------------》
 // 图的遍历 DFS BFS
-    void dfs(const vector<vector<int> > & graph, int v, vector<int> & visited) {
+    void DFS(const vector<vector<int> > & graph, int v, vector<bool> & visited) {
         if (visited[v]) return;
         visited[v] = true;
         for (auto adjv : graph[v]) {
             dfs(graph, adjv, visited);
         }
     }
-    void bfs(const vector<vector<int> > & graph, int v, vector<int>& visited) {
+    void BFS(const vector<vector<int> > & graph, int v, vector<bool>& visited) {
         if (visited[v]) return;
         visited[v] = true;
         queue<int> que;
@@ -89,7 +89,7 @@ void dfs(const vector<vector<int> >& graph, const int vertex, vector<int> & path
 }
 
 // 《----------------------------------------------------------------------------------------------------------------------》
-// 拓扑排序 & 环路检测
+// 拓扑排序 & 环路检测 使用入度 辅助数组
 class Solution {
     void make_graph(const vector<vector<int> >& prerequisites, vector<vector<int> >& graph, vector<int> & vertex_in_degree) {
         for (auto prerequi : prerequisites) { // prerequi[0] <- prerequi[1]
@@ -121,5 +121,77 @@ public:
         vector<int> vertex_in_degree(numCourses, 0);
         make_graph(prerequisites, graph, vertex_in_degree);
         return !isRing(graph, vertex_in_degree);
+    }
+};
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 拓扑排序 & 环路检测 & DFS
+class Solution {
+    void DFS(const vector<vector<int> >& graph, int v, vector<bool>& visited, vector<bool>& onPath) {
+        if (onPath[v] == true) {
+            hasCycle = true;
+            return;
+        }
+        if (visited[v]) return;
+        visited[v] = true;
+        onPath[v] = true;
+        for (auto adjv : graph[v]) {
+            DFS(graph, adjv, visited, onPath);
+        }
+        onPath[v] = false;
+    }
+    void buildGraph(vector<vector<int> >& graph, vector<vector<int> >& prerequisites) {
+        for (auto prerequire : prerequisites) {
+            graph[prerequire[1]].push_back(prerequire[0]);
+        }
+    }
+    bool hasCycle = false;
+public:
+    bool canFinish(int numCourses, vector<vector<int> >& prerequisites) {
+        vector<vector<int> > graph(numCourses, vector<int>());
+        vector<bool> visited(numCourses, false);
+        vector<bool> onPath(numCourses, false);
+        buildGraph(graph, prerequisites);
+        for (int v = 0; v < numCourses; ++v) {
+            DFS(graph, v, visited, onPath);
+        }
+        return !hasCycle;
+    }
+};
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 拓扑排序 & 环路检测 & DFS & 输出拓扑排序 -- > DFS 后续遍历 的 逆序
+class Solution {
+    bool hasCycle = false;
+    vector<int> topSort = {};
+    void DFS(const vector<vector<int> >& graph, int v, vector<bool>& visited, vector<bool>& onPath) {
+        if (onPath[v]) { hasCycle = true; return; }
+        if (visited[v]) return;
+        visited[v] = true;
+        onPath[v] = true;
+        for (auto adjV : graph[v]) {
+            DFS(graph, adjV, visited, onPath);
+        }
+        onPath[v] = false;
+        topSort.push_back(v);
+    }
+    void buildGraph(vector<vector<int> >& graph, vector<vector<int> >& prerequisites) {
+        for (auto prerequi : prerequisites) {
+            graph[prerequi[1]].push_back(prerequi[0]); // prerequi[0] <- prerequi[1] | 顶点prerequi[0] 是 顶点prerequi[1] 的邻节点
+        }
+    }
+public:
+    vector<int> findOrder(int numCourses, vector<vector<int> >& prerequisites) {
+        vector<vector<int> > graph(numCourses, vector<int>());
+        buildGraph(graph, prerequisites);
+
+        vector<bool> visited(numCourses, false);
+        vector<bool> onPath(numCourses, false);
+        for (int i = 0; i < numCourses; ++i){
+            DFS(graph, i, visited, onPath);
+        }
+        // std::reverse(topSort.begin(), topSort.end()); // DFS 后续遍历 的 逆序
+        std::reverse(std::begin(topSort), std::end(topSort));
+        return hasCycle == true ? vector<int>() : topSort;
     }
 };
