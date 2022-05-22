@@ -163,6 +163,72 @@ public:
     }
 };
 
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 二分图判定 DFS
+// -- leetcode.785
+class Solution {
+    void DFS(const vector<vector<int> >& graph, int v, vector<bool>& visited, vector<bool>& color) {
+        if (ok == false) return; // 如果已经发现不是 二分图了，所以没必要再遍历下去了
+        visited[v] = true;
+        for (auto neighbour : graph[v]) { // 遍历邻居节点
+            if (!visited[neighbour]) { // 如果邻居节点没有被访问过
+                color[neighbour] = !color[v]; // 将邻居节点 着相反色
+                DFS(graph, neighbour, visited, color);
+            } else { // 如果邻居节点被访问过（说明已经着色了，需要判断邻居节点和它的颜色是否相反）
+                if (color[neighbour] == color[v]) {
+                    ok = false;
+                }
+            }
+        }
+    }
+    bool ok = true;
+public:
+    bool isBipartite(vector<vector<int>>& graph) {
+        vector<bool> visited(graph.size(), false);
+        vector<bool> color(graph.size(), false);
+        for (int i = 0; i < graph.size(); ++i) {
+            DFS(graph, i, visited, color);
+        }
+        return ok;
+    }
+};
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 二分图判定 BFS 
+// -- leetcode.785
+class Solution {
+    void BFS(const vector<vector<int> >& graph, int v, vector<bool>& visited, vector<bool>& color) {
+        queue<int> que;
+        que.push(v);
+        while(!que.empty()) {
+            if (ok == false) return;
+            int vertex = que.front();  que.pop();
+            visited[vertex] = true;
+            for (auto neighbour : graph[vertex]) { // 遍历邻居节点
+                if (!visited[neighbour]) { // 如果邻居节点没有被访问过
+                    que.push(neighbour);
+                    color[neighbour] = !color[vertex];  // 将邻居节点 着相反色
+                } else {  // 如果邻居节点被访问过（说明已经着色了，需要判断邻居节点和它的颜色是否相反）
+                    if (color[neighbour] == color[vertex]) {
+                        ok = false;
+                    }
+                }
+            }
+        }
+    }
+    bool ok = true;
+public:
+    bool isBipartite(vector<vector<int>>& graph) {
+        vector<bool> visited(graph.size(), false);
+        vector<bool> color(graph.size(), false);
+        for (int i = 0; i < graph.size(); ++i) { // 因为图可能不是联通的
+            BFS(graph, i, visited, color);
+        }
+        return ok;
+    }
+};
+
 // 《----------------------------------------------------------------------------------------------------------------------》
 // 拓扑排序 & 环路检测 & DFS & 输出拓扑排序 -- > DFS 后续遍历 的 逆序
 class Solution {
@@ -199,3 +265,42 @@ public:
         return hasCycle == true ? vector<int>() : topSort;
     }
 };
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 带路径压缩的并查集
+class UF_Set {
+public:
+    UF_Set(int N);
+    ~UF_Set();
+    void Union(int x, int y);
+    int find(int x);
+    bool isConnect(int x, int y);
+    int count();
+private:
+    int* parent;
+    int _count;
+};
+UF_Set::UF_Set(int N) {
+    _count = N;
+    parent = new int[N];
+    for (int i = 0; i < N; ++i) {
+        parent[i] = i;
+    }
+}
+UF_Set::~UF_Set() { delete [] parent; }
+void UF_Set::Union(int x, int y) {
+    if (find(x) != find(y)) { // 多次调用find()，有利于路径压缩，并且本身find()的是复杂度就是O(1)
+        parent[find(x)] = find(y);
+    }
+}
+int UF_Set::find(int x) {
+    while(x != parent[x]) {
+        parent[x] = parent[parent[x]]; // 路径压缩
+        x = parent[x];
+    }
+    return x;
+}
+bool UF_Set::isConnect(int x, int y) {
+    return find(x) == find(y);
+}
+int UF_Set::count() { return _count; }
