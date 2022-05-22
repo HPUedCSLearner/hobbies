@@ -7,26 +7,30 @@ using std::vector;
 // 《----------------------------------------------------------------------------------------------------------------------》
 // 图的遍历 DFS BFS
     void DFS(const vector<vector<int> > & graph, int v, vector<bool> & visited) {
-        if (visited[v]) return;
-        visited[v] = true;
-        for (auto adjv : graph[v]) {
-            dfs(graph, adjv, visited);
+        if (visited[v]) return; // base case 递归出口
+        visited[v] = true; // 标注为visited
+        for (auto adjv : graph[v]) { // 遍历此顶点的邻节点
+            DFS(graph, adjv, visited);
+        }
+    }
+    void DFS(const vector<vector<int> > & graph, int v, vector<bool> & visited) {
+        visited[v] = true; // 标注为visited
+        for (auto adjv : graph[v]) { // 遍历此顶点的邻节点
+            if (!visited[adjv]){ // 如果邻节点没有被访问过，DFS
+                DFS(graph, adjv, visited);
+            }
         }
     }
     void BFS(const vector<vector<int> > & graph, int v, vector<bool>& visited) {
-        if (visited[v]) return;
-        visited[v] = true;
         queue<int> que;
-        for (auto adjv : graph[v]) {
-            que.push(adjv);
-        }
-        while (que.size() != 0) {
-            int vertex = que.front();
-            que.pop();
-            if (visited[vertex]) continue;
-            visited[vertex] = true;
-            for (auto adjv : graph[vertex]) {
-                que.push(adjv);
+        que.push(v);
+        while(!que.empty()) {
+            int vertex = que.front();   que.pop(); // 从队中取出一个顶点
+            visited[vertex] = true; // 标注为visited
+            for (auto adjv : graph[vertex]) { // 遍历此顶点的邻节点，如果邻节点没有被访问过，入队
+                if (!visited[adjv]) {
+                    que.push(adjv);
+                }
             }
         }
     }
