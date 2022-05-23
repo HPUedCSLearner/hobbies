@@ -1,8 +1,27 @@
+#include <iostream>
 #include <vector>
 #include <queue>
 
 using std::queue;
 using std::vector;
+using std::pair;
+using std::make_pair;
+using std::cout;
+using std::endl;
+
+// 技巧：
+// 1、方向向量 ： 
+//    int d[4][2] = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+
+// 2、利用二维 for(auto : ) 进行 图的可视化 debug
+// void bfs(vector<vector<char> >& board, int x, int y) {
+//     while (!que.empty()) {
+        // cout << que.size() << " <- que.size()" << endl;
+        // for (auto row : board) {
+        //     for (auto col : row) {
+        //         cout << col << " ";
+        //     } cout << endl;
+        // }
 
 // 《----------------------------------------------------------------------------------------------------------------------》
 // 图的遍历 DFS BFS
@@ -31,6 +50,40 @@ using std::vector;
                 if (!visited[adjv]) {
                     que.push(adjv);
                 }
+            }
+        }
+    }
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 图的遍历 坐标点的 DFS BFS
+    int d[4][2] = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+    void BFS(vector<vector<char> >& board, int x, int y) {
+        queue<pair<int, int> > que;
+        que.push(pair<int, int>(x, y));
+        while (!que.empty()) {
+            std::pair<int, int> zone = que.front();   que.pop();
+            // visited 
+            for (int i = 0; i < 4; ++i) { // 方向选择 - 四个方向
+                int nx = zone.first  + d[i][0];
+                int ny = zone.second + d[i][1];
+                if (nx >= 0 && nx < board.size() && ny >= 0 && ny < board[0].size()) { // 坐标检查
+                    if (board[nx][ny] == 'O') {
+                        que.push(make_pair(nx, ny));
+                    }
+                }
+            }
+        }
+    }
+
+    void DFS(vector<vector<char> >& board, int x, int y) {
+    if (board[x][y] == 'X') return; // base case : dfs 的时候遇到 墙 - > return
+    if (board[x][y] == 'O') board[x][y] = '#'; // 操作
+    for (int i = 0; i < 4; ++i) { // 方向选择 - 四个方向
+        int nx = x + d[i][0];
+        int ny = y + d[i][1];
+        if (nx >= 0 && nx < board.size() && ny >= 0 && ny < board[0].size()) { // 坐标检查
+            if (board[nx][ny] == 'O') {
+                dfs (board, nx, ny); // 依次dfs 上下左右 不为墙的位置
             }
         }
     }
@@ -219,7 +272,7 @@ class Solution {
     }
     bool ok = true;
 public:
-    bool isBipartite(vector<vector<int>>& graph) {
+    bool isBipartite(vector<vector<int> >& graph) {
         vector<bool> visited(graph.size(), false);
         vector<bool> color(graph.size(), false);
         for (int i = 0; i < graph.size(); ++i) { // 因为图可能不是联通的
@@ -304,3 +357,129 @@ bool UF_Set::isConnect(int x, int y) {
     return find(x) == find(y);
 }
 int UF_Set::count() { return _count; }
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 被围绕的区域 -- DFS
+// -- leetcode.130 被围绕的区域
+class Solution {
+    int d[4][2] = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+    void dfs(vector<vector<char> >& board, int x, int y) {
+        if (board[x][y] == 'X') return; // base case : dfs 的时候遇到 墙 - > return
+        if (board[x][y] == 'O') board[x][y] = '#'; // 操作
+        for (int i = 0; i < 4; ++i) {
+            int nx = x + d[i][0];
+            int ny = y + d[i][1];
+            if (nx >= 0 && nx < board.size() && ny >= 0 && ny < board[0].size()) {
+                if (board[nx][ny] == 'O') {
+                    dfs (board, nx, ny); // 依次dfs 上下左右 不为墙的位置
+                }
+            }
+        }
+    }
+public:
+    void solve(vector<vector<char> >& board) {
+        int m = board.size(), n = board[0].size();
+        for (int i = 0; i < n; ++i) {
+            dfs(board, 0, i);
+            dfs(board, m -1, i);
+        }
+        for (int j = 0; j < m; ++j) {
+            dfs(board, j, 0);
+            dfs(board, j, n - 1);
+        }
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (board[i][j] == 'O') board[i][j] = 'X';
+                else if (board[i][j] == '#') board[i][j] = 'O';
+            }
+        }
+    }
+};
+
+// 《----------------------------------------------------------------------------------------------------------------------》
+// 被围绕的区域 -- BFS
+// -- leetcode.130 被围绕的区域
+class Solution {
+    int d[4][2] = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+    void bfs(vector<vector<char> >& board, int x, int y) {
+        if (board[x][y] == 'X' || board[x][y] == '#') return;
+        queue<pair<int, int> > que;
+        que.push(pair<int, int>(x, y));
+        board[x][y] = '#';
+        while (!que.empty()) {
+            // Debug info :
+            // cout << que.size() << " <- que.size()" << endl;
+            // for (auto row : board) {
+            //     for (auto col : row) {
+            //         cout << col << " ";
+            //     } cout << endl;
+            // }
+            std::pair<int, int> zone = que.front();   que.pop();
+            for (int i = 0; i < 4; ++i) {
+                int nx = zone.first  + d[i][0];
+                int ny = zone.second + d[i][1];
+                if (nx >= 0 && nx < board.size() && ny >= 0 && ny < board[0].size()) {
+                    if (board[nx][ny] == 'O') {
+                        que.push(make_pair(nx, ny));
+                        board[nx][ny] = '#';
+                    }
+                }
+            }
+        }
+    }
+public:
+    void solve(vector<vector<char> >& board) {
+        int m = board.size(), n = board[0].size();
+                for (int i = 0; i < n; ++i) {
+            bfs(board, 0, i);
+            bfs(board, m -1, i);
+        }
+        for (int j = 0; j < m; ++j) {
+            bfs(board, j, 0);
+            bfs(board, j, n - 1);
+        }
+
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (board[i][j] == 'O') board[i][j] = 'X';
+                else if (board[i][j] == '#') board[i][j] = 'O';
+            }
+        }
+    }     
+};
+
+[
+["x","x","O","O","O","O","O","O","X","O","O","O","O","O","X","O","O","O","O","O"],
+["x","X","X","O","O","O","O","O","O","X","O","O","O","O","O","O","O","O","O","O"]]
+
+1 <- que.size()
+# O O O O O O O X O O O O O X O O O O O 
+O X X O O O O O O X O O O O O O O O O O 
+2 <- que.size()
+# # O O O O O O X O O O O O X O O O O O 
+# X X O O O O O O X O O O O O O O O O O 
+2 <- que.size()
+# # # O O O O O X O O O O O X O O O O O 
+# X X O O O O O O X O O O O O O O O O O 
+1 <- que.size()
+# # # O O O O O X O O O O O X O O O O O 
+# X X O O O O O O X O O O O O O O O O O 
+1 <- que.size()
+# # # # O O O O X O O O O O X O O O O O 
+# X X O O O O O O X O O O O O O O O O O 
+2 <- que.size()
+# # # # # O O O X O O O O O X O O O O O 
+# X X # O O O O O X O O O O O O O O O O 
+3 <- que.size()
+# # # # # # O O X O O O O O X O O O O O 
+# X X # # O O O O X O O O O O O O O O O 
+2 <- que.size()
+# # # # # # O O X O O O O O X O O O O O 
+# X X # # O O O O X O O O O O O O O O O 
+3 <- que.size()
+# # # # # # # O X O O O O O X O O O O O 
+# X X # # # O O O X O O O O O O O O O O 
+2 <- que.size()
+# # # # # # # O X O O O O O X O O O O O 
+# X X # # # O O O X O O O O O O O O O O 
