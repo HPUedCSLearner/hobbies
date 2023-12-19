@@ -75,18 +75,45 @@ __global__ void printHelloCuda_3()
             threadIdx.x, threadIdx.y, threadIdx.z);
 }
 
+__global__ void printHelloCuda_4()
+{
+    int globalIndexX = blockIdx.x * blockDim.x + threadIdx.x;
+    int globalIndexY = blockIdx.y * blockDim.y + threadIdx.y;
+    int globalIndexZ = blockIdx.z * blockDim.z + threadIdx.z;
+
+    int globalDimX = gridDim.x * blockDim.x;
+    int globalDimY = gridDim.y * blockDim.y;
+    int globalDimZ = gridDim.z * blockDim.z;
+
+
+    // 求全局索引原理：把grid和blocks看作是一个大的cube
+    // thread的坐标是[globalIndexX, globalIndexY, globalIndexZ]
+    // 这个大的cube的维度是[globalDimX, globalDimY, globalDimZ]
+
+    int globalIndex = globalIndexZ * (globalDimY * globalDimX) + globalIndexY * (globalDimX) + globalIndexX;
+    
+
+    printf("in printHelloCuda_4, <<<grids, block>>> Info : {gridDim[%d, %d, %d], blockDim[%d, %d, %d]}\n", gridDim.x, gridDim.y, gridDim.z, blockDim.x, blockDim.y, blockDim.z);
+    
+    printf("I am globalIndex[%d], globalIndex[%d, %d, %d], in blockIdx[%d, %d, %d], in threadIdx[%d, %d, %d]\n", 
+            globalIndex, globalIndexX, globalIndexY, globalIndexZ, 
+            blockIdx.x, blockIdx.y, blockIdx.z,
+            threadIdx.x, threadIdx.y, threadIdx.z);
+}
+
 
 int main() {
 
 
-    printHelloCuda_3<<<3, 1>>>();
-    printHelloCuda_3<<<1, 3>>>();
+    // printHelloCuda_3<<<3, 1>>>();
+    // printHelloCuda_3<<<1, 3>>>();
 
-    // dim3 grids(2,2,1);
-    // dim3 blocks(2,1,1);
+    dim3 grids(2,2,1);
+    dim3 blocks(2,1,1);
     // printHelloCuda_1<<<grids, blocks>>>();
     // printHelloCuda_2<<<grids, blocks>>>();
     // printHelloCuda_3<<<grids, blocks>>>();
+    printHelloCuda_4<<<grids, blocks>>>();
 
 
      // 检查核函数执行是否失败
